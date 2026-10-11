@@ -7,7 +7,7 @@ export type Tab = 'thai' | 'chinese' | 'western' | 'today';
 
 export interface FormState {
   date: string; // YYYY-MM-DD
-  time: string; // HH:MM หรือว่าง
+  time: string; // ชั่วโมง 'HH' (00–23) หรือว่าง — เลือกจาก dropdown
   province: string; // ชื่อจังหวัดหรือว่าง
   sex: '' | 'male' | 'female';
 }
@@ -52,7 +52,9 @@ export function loadSaved(): Saved | null {
     if (!raw) return null;
     const v = JSON.parse(raw) as Saved;
     if (typeof v?.form?.date !== 'string') return null;
-    return { form: v.form, conv: { ...DEFAULT_CONVENTIONS, ...v.conv } };
+    // ค่ารุ่นเก่าเก็บเป็น HH:MM → ตัดเหลือชั่วโมง
+    const time = /^\d{2}/.test(v.form.time ?? '') ? v.form.time.slice(0, 2) : '';
+    return { form: { ...v.form, time }, conv: { ...DEFAULT_CONVENTIONS, ...v.conv } };
   } catch {
     return null;
   }

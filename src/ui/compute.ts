@@ -15,12 +15,26 @@ import { biorhythm, daysSince, tzolkin } from '../lib/western/cycles';
 import { birthdayNumber, lifePath, personalYear } from '../lib/western/numerology';
 import { birthCards, dailyCards, yearCard } from '../lib/western/tarot';
 import { nakshatra, natalChart, planetSign } from '../lib/western/zodiac';
+import type { InputField } from '../lib/sciences';
 import type { AppState } from './state';
+
+/** ข้อมูลที่ผู้ใช้กรอกแล้ว (ใช้กำหนดความสว่างของดาวแต่ละศาสตร์) */
+export function filledFields(s: AppState): Set<InputField> {
+  const have = new Set<InputField>();
+  const input = toBirthInput(s);
+  if (!input) return have;
+  have.add('date');
+  if (input.time) have.add('time');
+  if (input.place) have.add('place');
+  if (input.sex) have.add('sex');
+  return have;
+}
 
 export function toBirthInput(s: AppState): BirthInput | null {
   const date = parseIsoDate(s.form.date);
   if (!date || date.y < 1900 || date.y > 2100) return null;
-  const time = s.form.time ? parseClock(s.form.time) ?? undefined : undefined;
+  // เวลาเกิดเลือกเป็นชั่วโมง → คำนวณที่กลางชั่วโมง (HH:30)
+  const time = /^\d{2}$/.test(s.form.time) ? parseClock(`${s.form.time}:30`) ?? undefined : undefined;
   const p = PROVINCES.find((x) => x.name === s.form.province);
   return {
     date,

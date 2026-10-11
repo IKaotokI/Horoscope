@@ -1,8 +1,10 @@
-/* ดวงสามศาสตร์ — mobile-first
-   พื้นหลังท้องฟ้าหมึก/คราม (จุดอลังการ) + การ์ดอ่านง่ายแบบกระดาษ, ทองใช้เฉพาะหัวเรื่องและกรอบ (CLAUDE.md §7) */
+/* ดวงสามศาสตร์ — ธีม Galaxy, mobile-first
+   ฟอร์มเรียงแนวตั้งชิดซ้าย, พื้นที่ที่เหลือเป็นกาแล็กซีหมุนช้าๆ, การ์ดผลเป็นกระจกใสบนพื้นอวกาศ (CLAUDE.md §7) */
 
 :root {
-  /* สีประจำวัน (ค่าที่เสนอเอง ไม่มีแหล่งอ้างอิง) — เหลือง/ชมพู/เขียวอ่อน ใช้เป็นพื้นหรือขอบเท่านั้น */
+  color-scheme: dark;
+
+  /* สีประจำวัน (ค่าที่เสนอเอง ไม่มีแหล่งอ้างอิง) */
   --day-sun: #d7262e;
   --day-mon: #f2c230;
   --day-tue: #f27fb0;
@@ -11,30 +13,32 @@
   --day-fri: #3a8fd9;
   --day-sat: #7b4fb3;
   --gold: #c9a227;
-  --gold-ink: #7a5d00; /* ทองสำหรับตัวอักษรบนกระดาษ (ผ่าน AA) */
+  --gold-text: #f0cd6a;
 
-  --ink: #0b0e22;
-  --ink-2: #141938;
-  --ink-3: #1f2652;
-  --sky-text: #e9e4f5;
-  --sky-muted: #a9a5c4;
+  /* อวกาศ */
+  --space-0: #05040f;
+  --space-1: #0b0a22;
+  --space-2: #15123a;
+  --nebula-violet: #6b3fd1;
+  --nebula-pink: #d6409f;
+  --nebula-blue: #2f6fe0;
 
-  --paper: #f7f2e7;
-  --paper-2: #efe7d6;
-  --paper-line: #ded3bc;
-  --text: #1f1b2d;
-  --muted: #5d566e;
-  --warn-bg: #fff1d6;
-  --warn-text: #7a4a00;
+  /* การ์ดกระจก */
+  --glass: rgba(22, 19, 54, 0.72);
+  --glass-2: rgba(255, 255, 255, 0.06);
+  --glass-line: rgba(176, 160, 255, 0.22);
+  --text: #eeeaff;
+  --muted: #aaa4cf;
+  --warn-bg: rgba(255, 186, 84, 0.14);
+  --warn-text: #ffd38a;
 
-  --cinnabar: #8f1d14;
-  --cinnabar-2: #6e140e;
+  /* ตระกูลศาสตร์ (สีประกายดาว) */
+  --fam-thai: #ffce5c;
+  --fam-chinese: #ff705c;
+  --fam-western: #96bcff;
 
-  --el-wood: #2e7d4f;
-  --el-fire: #c0392b;
-  --el-earth: #8a6a00;
-  --el-metal: #6b7280;
-  --el-water: #1f4f99;
+  --cinnabar: #7a1626;
+  --cinnabar-2: #3a0b1f;
 
   --radius: 18px;
   --font-head: 'Chonburi', 'Sarabun', serif;
@@ -43,120 +47,179 @@
 }
 
 * { box-sizing: border-box; }
-
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(120% 70% at 50% 0%, var(--ink-3) 0%, var(--ink-2) 40%, var(--ink) 100%) fixed;
-  background-color: var(--ink);
-  color: var(--sky-text);
+  background-color: var(--space-0);
+  background-image:
+    radial-gradient(60% 45% at 75% 30%, rgba(107, 63, 209, 0.28), transparent 70%),
+    radial-gradient(40% 35% at 15% 85%, rgba(214, 64, 159, 0.14), transparent 70%),
+    radial-gradient(50% 40% at 90% 90%, rgba(47, 111, 224, 0.16), transparent 70%),
+    linear-gradient(180deg, var(--space-1), var(--space-0) 60%);
+  background-attachment: fixed;
+  color: var(--text);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
 }
 
 .skip { position: absolute; left: -999px; }
-.skip:focus { left: 16px; top: 16px; z-index: 10; background: var(--paper); color: var(--text); padding: 8px 12px; border-radius: 8px; }
+.skip:focus { left: 16px; top: 16px; z-index: 20; background: var(--glass); color: var(--text); padding: 8px 12px; border-radius: 8px; }
+:focus-visible { outline: 2px solid var(--gold-text); outline-offset: 2px; }
 
-:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+/* ---------- ส่วนบน: ฟอร์มซ้าย + กาแล็กซี ---------- */
+.hero { display: flex; flex-direction: column; }
 
-.sky-wrap { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-#sky { width: 100%; height: 100%; display: block; }
+.side { position: relative; z-index: 2; padding: 20px 16px 8px; order: 2; }
 
-.site-head, main, .site-foot { position: relative; z-index: 1; }
-
-.site-head {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 28px 16px 8px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+.galaxy {
+  order: 1;
+  position: relative;
+  height: 56vh;
+  min-height: 320px;
+  max-height: 520px;
+  overflow: hidden;
+  /* ภาพนิ่งระหว่างรอ canvas และเมื่อ JS ปิด */
+  background: radial-gradient(28% 16% at 50% 50%, rgba(255, 230, 180, 0.35), transparent 70%);
 }
-.brand-kicker { margin: 0; font-family: var(--font-ui); letter-spacing: 0.2em; color: var(--gold); font-size: 13px; }
-.brand h1 {
-  margin: 4px 0 4px;
+.galaxy-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.galaxy-labels { position: absolute; inset: 0; }
+
+.site-head { margin-bottom: 14px; }
+.brand-kicker { margin: 0; font-family: var(--font-ui); letter-spacing: 0.2em; color: var(--gold-text); font-size: 13px; }
+.site-head h1 {
+  margin: 2px 0 4px;
   font-family: var(--font-head);
   font-weight: 400;
-  font-size: clamp(34px, 9vw, 52px);
+  font-size: clamp(32px, 8vw, 44px);
   line-height: 1.25;
-  background: linear-gradient(180deg, #f5dc8a, var(--gold) 60%, #8f6d10);
+  background: linear-gradient(100deg, #fff3c4, var(--gold-text) 35%, #e3a6ff 75%, #9ec0ff);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  text-shadow: 0 0 28px rgba(201, 162, 39, 0.25);
 }
-.brand-sub { margin: 0; color: var(--sky-muted); }
+.brand-sub { margin: 0; color: var(--muted); font-size: 15px; }
 
-.ghost-btn {
-  flex: none;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  color: var(--sky-text);
-  background: transparent;
-  border: 1px solid rgba(201, 162, 39, 0.5);
-  border-radius: 999px;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
-
-/* ฟอร์ม */
+/* ฟอร์ม: เรียงแนวตั้ง ชิดซ้าย */
 .birth-form {
-  margin-top: 16px;
-  background: rgba(20, 25, 56, 0.78);
-  border: 1px solid rgba(201, 162, 39, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  text-align: left;
+  background: linear-gradient(160deg, rgba(40, 30, 96, 0.55), rgba(12, 10, 34, 0.75));
+  border: 1px solid var(--glass-line);
   border-radius: var(--radius);
   padding: 18px 16px;
-  display: grid;
-  gap: 14px;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 20px 50px rgba(0, 0, 0, 0.45);
 }
-.field { display: grid; gap: 4px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
 .field label { font-family: var(--font-ui); font-size: 15px; }
-.field small { color: var(--sky-muted); font-size: 13px; }
+.field small { color: var(--muted); font-size: 13px; }
 .req, .opt { font-size: 12px; margin-left: 6px; padding: 1px 8px; border-radius: 999px; }
-.req { background: var(--gold); color: var(--ink); }
-.opt { border: 1px solid var(--sky-muted); color: var(--sky-muted); }
+.req { background: var(--gold); color: var(--space-0); }
+.opt { border: 1px solid rgba(170, 164, 207, 0.6); color: var(--muted); }
 .field input, .field select {
   font: inherit;
   font-family: var(--font-ui);
   color: var(--text);
-  background: var(--paper);
-  border: 1px solid var(--paper-line);
+  background: rgba(8, 7, 26, 0.7);
+  border: 1px solid var(--glass-line);
   border-radius: 12px;
   padding: 10px 12px;
   min-height: 46px;
   width: 100%;
 }
-.form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.field input:focus, .field select:focus { border-color: var(--gold-text); box-shadow: 0 0 0 3px rgba(240, 205, 106, 0.18); outline: none; }
+.field select option { background: var(--space-1); color: var(--text); }
 .primary-btn {
+  align-self: flex-start;
   font-family: var(--font-ui);
   font-size: 18px;
-  color: var(--ink);
-  background: linear-gradient(180deg, #f1d27a, var(--gold));
+  color: var(--space-0);
+  background: linear-gradient(180deg, #ffe7a0, var(--gold));
   border: 0;
   border-radius: 999px;
-  padding: 10px 28px;
+  padding: 10px 32px;
   cursor: pointer;
   min-height: 46px;
+  box-shadow: 0 0 24px rgba(240, 205, 106, 0.35);
 }
+.form-extra { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
 .check { display: inline-flex; gap: 6px; align-items: center; font-size: 14px; }
-.check input { width: 18px; height: 18px; }
-.link-btn { background: none; border: 0; color: var(--sky-muted); text-decoration: underline; font: inherit; font-size: 14px; cursor: pointer; padding: 4px 0; }
-.form-error { margin: 0; min-height: 1em; color: #ffd38a; font-size: 14px; }
-.privacy { margin: 0; color: var(--sky-muted); font-size: 13px; }
+.check input { width: 18px; height: 18px; accent-color: var(--gold); }
+.link-btn { background: none; border: 0; color: var(--muted); text-decoration: underline; font: inherit; font-size: 14px; cursor: pointer; padding: 4px 0; }
+.form-error { margin: 0; min-height: 1em; color: var(--warn-text); font-size: 14px; }
+.privacy { margin: 0; color: var(--muted); font-size: 13px; }
 
-@media (min-width: 640px) {
-  .birth-form { grid-template-columns: 1fr 1fr; padding: 22px; }
-  .form-actions, .form-error, .privacy { grid-column: 1 / -1; }
+/* ประกายดาวของแต่ละศาสตร์ (ป้ายชื่อ DOM วางทับตำแหน่งบน canvas) */
+.sci-star {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  will-change: transform;
+  opacity: 0.45;
+  transition: opacity 0.6s ease, color 0.6s ease;
+}
+.sci-dot { width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; flex: none; }
+.sci-name { margin-top: -11px; padding: 0 4px; border-radius: 6px; }
+.sci-star[data-level='1'] { opacity: 0.75; color: var(--text); }
+.sci-star[data-level='2'] { opacity: 1; color: #fff; }
+.sci-star[data-level='2'].fam-thai .sci-name { text-shadow: 0 0 10px var(--fam-thai); }
+.sci-star[data-level='2'].fam-chinese .sci-name { text-shadow: 0 0 10px var(--fam-chinese); }
+.sci-star[data-level='2'].fam-western .sci-name { text-shadow: 0 0 10px var(--fam-western); }
+.sci-name .short { display: none; }
+@media (max-width: 599px) { .sci-name .long { display: none; } .sci-name .short { display: inline; } }
+.sci-star:hover .sci-name, .sci-star:focus-visible .sci-name { background: rgba(5, 4, 15, 0.7); }
+
+.galaxy-count { position: absolute; left: 16px; bottom: 10px; margin: 0; z-index: 2; font-family: var(--font-ui); font-size: 13px; color: var(--gold-text); }
+.galaxy-legend { position: absolute; right: 16px; bottom: 12px; z-index: 2; display: flex; gap: 10px; font-size: 12px; font-family: var(--font-ui); color: var(--muted); }
+.lg::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.lg-thai::before { background: var(--fam-thai); box-shadow: 0 0 8px var(--fam-thai); }
+.lg-chinese::before { background: var(--fam-chinese); box-shadow: 0 0 8px var(--fam-chinese); }
+.lg-western::before { background: var(--fam-western); box-shadow: 0 0 8px var(--fam-western); }
+
+.ghost-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--text);
+  background: rgba(5, 4, 15, 0.45);
+  border: 1px solid rgba(240, 205, 106, 0.45);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
 }
 
-/* แท็บ */
-.results { margin-top: 24px; }
+@media (min-width: 900px) {
+  .hero { flex-direction: row; min-height: 100vh; }
+  .side { order: 1; flex: 0 0 380px; padding: 32px 24px; display: flex; flex-direction: column; justify-content: center; }
+  .galaxy { order: 2; flex: 1; height: auto; max-height: none; min-height: 100vh; }
+  .sci-name { font-size: 13px; }
+}
+
+/* ---------- ผลลัพธ์ ---------- */
+main { max-width: 820px; margin: 0 auto; padding: 8px 16px 24px; }
+.results { margin-top: 16px; }
 .tabs {
   position: sticky;
   top: 0;
@@ -165,36 +228,38 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
   padding: 8px 0;
-  background: linear-gradient(180deg, var(--ink) 75%, transparent);
+  background: linear-gradient(180deg, var(--space-0) 75%, transparent);
 }
 .tabs button {
   font-family: var(--font-ui);
   font-size: 16px;
-  color: var(--sky-muted);
-  background: rgba(31, 38, 82, 0.7);
-  border: 1px solid transparent;
+  color: var(--muted);
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
   border-radius: 12px;
   padding: 10px 4px;
   cursor: pointer;
   min-height: 44px;
 }
-.tabs button[aria-selected='true'] { color: var(--ink); background: var(--gold); }
+.tabs button[aria-selected='true'] { color: var(--space-0); background: linear-gradient(180deg, #ffe7a0, var(--gold)); border-color: transparent; }
 
 .tab-panel { display: grid; gap: 16px; padding-top: 8px; }
 
-/* การ์ดแบบกระดาษ */
+/* การ์ดกระจกบนพื้นอวกาศ */
 .card {
-  background: var(--paper);
+  background: linear-gradient(165deg, rgba(46, 34, 110, 0.5), var(--glass) 45%);
   color: var(--text);
   border-radius: var(--radius);
   padding: 18px 16px 14px;
-  border: 1px solid var(--paper-line);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--glass-line);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 16px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
   overflow: hidden;
+  scroll-margin-top: 68px;
   animation: rise 0.45s ease both;
 }
 .card-head h3 { margin: 0 0 8px; font-family: var(--font-head); font-weight: 400; font-size: 24px; line-height: 1.35; }
-.kicker { margin: 0; font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.08em; color: var(--gold-ink); }
+.kicker { margin: 0; font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.08em; color: var(--gold-text); }
 .card-body > :first-child { margin-top: 0; }
 .lead { font-size: 17px; }
 .note { color: var(--muted); font-size: 14px; }
@@ -202,7 +267,7 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
 .convention {
   margin: 14px 0 0;
   padding-top: 10px;
-  border-top: 1px dashed var(--paper-line);
+  border-top: 1px dashed var(--glass-line);
   font-size: 13px;
   color: var(--muted);
   display: flex;
@@ -210,30 +275,30 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
   gap: 4px 8px;
   align-items: center;
 }
-.convention-label { font-family: var(--font-ui); color: var(--gold-ink); }
-.inline-select { display: inline-flex; gap: 6px; align-items: center; }
+.convention-label { font-family: var(--font-ui); color: var(--gold-text); }
+.inline-select { display: inline-flex; gap: 6px; align-items: center; max-width: 100%; }
 .inline-select span { font-family: var(--font-ui); }
 .inline-select select {
   font: inherit;
   font-size: 13px;
   color: var(--text);
-  background: var(--paper-2);
-  border: 1px solid var(--paper-line);
+  background: rgba(8, 7, 26, 0.7);
+  border: 1px solid var(--glass-line);
   border-radius: 8px;
   padding: 4px 6px;
   max-width: 100%;
 }
 .badge { display: inline-block; font-family: var(--font-ui); font-size: 11px; padding: 1px 8px; border-radius: 999px; vertical-align: middle; }
-.badge-warn { background: var(--warn-bg); color: var(--warn-text); border: 1px solid #f0c674; }
+.badge-warn { background: var(--warn-bg); color: var(--warn-text); border: 1px solid rgba(255, 211, 138, 0.5); }
 .story { margin-top: 8px; font-size: 14px; color: var(--muted); }
-.story summary { cursor: pointer; font-family: var(--font-ui); color: var(--gold-ink); }
+.story summary { cursor: pointer; font-family: var(--font-ui); color: var(--gold-text); }
 
-.card-locked { background: rgba(247, 242, 231, 0.12); color: var(--sky-text); border: 1px dashed rgba(201, 162, 39, 0.5); box-shadow: none; }
+.card-locked { background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(240, 205, 106, 0.4); box-shadow: none; }
 .card-locked h3 { font-size: 18px; }
-.locked-msg { margin: 0; color: var(--sky-muted); }
+.locked-msg { margin: 0; color: var(--muted); }
 
 .facts { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 6px; }
-.facts li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--paper-line); padding-bottom: 6px; }
+.facts li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--glass-line); padding-bottom: 6px; }
 .facts li span { color: var(--muted); }
 .facts li b { text-align: right; font-weight: 600; }
 .alt-list { padding-left: 20px; }
@@ -241,12 +306,11 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
 .swatches { display: flex; flex-wrap: wrap; gap: 8px 14px; }
 .swatch { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; }
 .swatch small { display: block; color: var(--muted); font-size: 12px; line-height: 1.2; }
-.swatch-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(0, 0, 0, 0.15); flex: none; }
+.swatch-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.35); flex: none; box-shadow: 0 0 10px rgba(255, 255, 255, 0.15); }
 
-.big-num { font-family: var(--font-ui); font-size: 64px; line-height: 1; margin: 6px 0; color: var(--gold-ink); }
+.big-num { font-family: var(--font-ui); font-size: 64px; line-height: 1; margin: 6px 0; color: var(--gold-text); text-shadow: 0 0 24px rgba(240, 205, 106, 0.45); }
 
-/* การ์ดหลักพร้อมออร่าสีวันเกิด */
-.card-hero { position: relative; }
+/* การ์ดวันเกิด + ออร่าสีวันเกิด */
 .birth-hero { position: relative; }
 .birth-hero > :not(.aura) { position: relative; }
 .aura {
@@ -257,13 +321,13 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
   height: 220px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--aura) 0%, transparent 70%);
-  opacity: 0.45;
+  opacity: 0.5;
   animation: breathe 6s ease-in-out infinite;
 }
 .hero-sub { margin: 4px 0 8px; }
 
-.seg { display: inline-flex; border: 1px solid var(--paper-line); border-radius: 999px; overflow: hidden; margin: 6px 0; }
-.seg button { font: inherit; font-family: var(--font-ui); font-size: 14px; background: var(--paper-2); color: var(--text); border: 0; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.seg { display: inline-flex; border: 1px solid var(--glass-line); border-radius: 999px; overflow: hidden; margin: 6px 0; }
+.seg button { font: inherit; font-family: var(--font-ui); font-size: 14px; background: var(--glass-2); color: var(--text); border: 0; padding: 8px 14px; cursor: pointer; min-height: 40px; }
 .seg button[aria-pressed='true'] { background: var(--day-wed); color: #fff; }
 
 /* ผังทักษา 3×3 */
@@ -271,8 +335,8 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
 .taksa-cell {
   aspect-ratio: 1;
   border-radius: 14px;
-  background: var(--paper-2);
-  border: 2px solid var(--c, var(--paper-line));
+  background: rgba(8, 7, 26, 0.55);
+  border: 2px solid var(--c, var(--glass-line));
   display: grid;
   place-items: center;
   align-content: center;
@@ -280,15 +344,15 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
   padding: 4px;
   position: relative;
 }
-.taksa-cell::before { content: ''; position: absolute; inset: 0; border-radius: 12px; background: var(--c); opacity: 0.12; }
+.taksa-cell::before { content: ''; position: absolute; inset: 0; border-radius: 12px; background: radial-gradient(circle at 50% 40%, var(--c), transparent 75%); opacity: 0.22; }
 .taksa-dir { font-size: 11px; color: var(--muted); }
 .taksa-num { font-family: var(--font-ui); font-size: 26px; line-height: 1.1; }
 .taksa-planet { font-size: 13px; }
-.taksa-bhumi { font-family: var(--font-ui); font-size: 13px; color: var(--gold-ink); }
-.taksa-cell.is-self { box-shadow: 0 0 0 3px var(--gold); }
-.taksa-cell.is-kala .taksa-bhumi { color: #9b1c1c; }
-.taksa-center { background: linear-gradient(160deg, #f1d27a, var(--gold)); border-color: var(--gold); }
-.taksa-center .taksa-bhumi { color: var(--text); }
+.taksa-bhumi { font-family: var(--font-ui); font-size: 13px; color: var(--gold-text); }
+.taksa-cell.is-self { box-shadow: 0 0 0 3px var(--gold), 0 0 18px rgba(240, 205, 106, 0.5); }
+.taksa-cell.is-kala .taksa-bhumi { color: #ff9a9a; }
+.taksa-center { background: radial-gradient(circle, #fff1c2, var(--gold) 70%); border-color: var(--gold); color: var(--space-0); box-shadow: 0 0 24px rgba(240, 205, 106, 0.45); }
+.taksa-center .taksa-bhumi, .taksa-center .taksa-planet { color: var(--space-0); }
 
 .bhumi-list { display: grid; gap: 6px; margin: 0; }
 .bhumi-list div { display: grid; grid-template-columns: 7.5em 1fr; gap: 8px; }
@@ -298,132 +362,110 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
 
 /* วงล้อดวงชะตา */
 .wheel { width: 100%; max-width: 360px; display: block; margin: 0 auto; }
-.wheel-sector { fill: var(--paper-2); stroke: var(--paper-line); }
-.wheel-sector.alt { fill: #f3ecdd; }
-.wheel-sector.is-asc { fill: #f3dc94; stroke: var(--gold); }
-.wheel-ring { fill: none; stroke: var(--paper-line); }
-.wheel-tick { stroke: #c9bb9b; }
-.wheel-core { fill: var(--ink-2); }
+.wheel-sector { fill: rgba(255, 255, 255, 0.04); stroke: var(--glass-line); }
+.wheel-sector.alt { fill: rgba(150, 120, 255, 0.08); }
+.wheel-sector.is-asc { fill: rgba(240, 205, 106, 0.32); stroke: var(--gold-text); }
+.wheel-ring { fill: none; stroke: var(--glass-line); }
+.wheel-tick { stroke: rgba(176, 160, 255, 0.35); }
+.wheel-core { fill: var(--space-0); stroke: var(--glass-line); }
 .wheel-sign { font-family: var(--font-ui); font-size: 11px; fill: var(--muted); text-anchor: middle; dominant-baseline: middle; }
 .wheel-sign.western { font-size: 16px; }
 .wheel-planet { font-family: var(--font-ui); font-size: 15px; fill: var(--text); text-anchor: middle; dominant-baseline: middle; }
-.wheel-asc { font-family: var(--font-ui); font-size: 14px; fill: var(--gold); text-anchor: middle; dominant-baseline: middle; }
-.wheel-center { font-family: var(--font-head); font-size: 15px; fill: var(--gold); text-anchor: middle; }
-.wheel-center-sub { font-size: 11px; fill: var(--sky-muted); text-anchor: middle; }
+.wheel-asc { font-family: var(--font-ui); font-size: 14px; fill: var(--gold-text); text-anchor: middle; dominant-baseline: middle; }
+.wheel-center { font-family: var(--font-head); font-size: 15px; fill: var(--gold-text); text-anchor: middle; }
+.wheel-center-sub { font-size: 11px; fill: var(--muted); text-anchor: middle; }
 
 .planet-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 12px; font-size: 14px; }
-.planet-list b { font-family: var(--font-ui); display: inline-block; min-width: 1.6em; color: var(--gold-ink); }
+.planet-list b { font-family: var(--font-ui); display: inline-block; min-width: 1.6em; color: var(--gold-text); }
 .planet-list span { color: var(--muted); }
 
 /* เลข 7 ตัว */
 .table-scroll { overflow-x: auto; margin: 0 -4px; }
 .lek7 { border-collapse: collapse; width: 100%; min-width: 420px; font-family: var(--font-ui); }
-.lek7 th, .lek7 td { border: 1px solid var(--paper-line); padding: 4px; text-align: center; }
+.lek7 th, .lek7 td { border: 1px solid var(--glass-line); padding: 4px; text-align: center; }
 .lek7 th { font-weight: 400; font-size: 12px; color: var(--muted); white-space: nowrap; }
 .lek7 td { font-size: 20px; line-height: 1.2; }
 .lek7 td small { display: block; font-size: 10px; color: var(--muted); font-family: var(--font-body); }
-.lek7 .sum td { background: #f3dc94; }
+.lek7 .sum td { background: rgba(240, 205, 106, 0.16); color: var(--gold-text); }
 
 /* มหาทักษา */
 .timeline { list-style: none; padding: 0; margin: 10px 0 0; display: flex; border-radius: 10px; overflow: hidden; }
-.timeline li { flex: 0 0 var(--w); background: var(--c); color: #fff; padding: 6px 2px; text-align: center; font-size: 11px; line-height: 1.2; opacity: 0.55; min-width: 0; }
-.timeline li span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-ui); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
-.timeline li small { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
-.timeline li.is-now { opacity: 1; box-shadow: inset 0 0 0 3px var(--gold); }
+.timeline li { flex: 0 0 var(--w); background: var(--c); color: #fff; padding: 6px 2px; text-align: center; font-size: 11px; line-height: 1.2; opacity: 0.45; min-width: 0; }
+.timeline li span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-ui); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.timeline li small { text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+.timeline li.is-now { opacity: 1; box-shadow: inset 0 0 0 3px var(--gold-text); }
 
-/* จีน */
-.theme-chinese .card { border-top: 4px solid var(--cinnabar); }
+/* ไทย / จีน / สากล: เส้นขอบบนตามสีตระกูลศาสตร์ */
+.theme-thai .card:not(.card-locked) { border-top: 3px solid var(--fam-thai); }
+.theme-chinese .card:not(.card-locked) { border-top: 3px solid var(--fam-chinese); }
+.theme-western .card:not(.card-locked) { border-top: 3px solid var(--fam-western); }
+
+/* จีน: เนบิวลาแดงชาด + ทอง */
 .card-cinnabar {
-  background: linear-gradient(170deg, var(--cinnabar), var(--cinnabar-2));
-  color: #fbeee2;
-  border: 1px solid var(--gold);
+  background: radial-gradient(120% 80% at 20% 0%, rgba(214, 64, 80, 0.35), transparent 60%), linear-gradient(170deg, var(--cinnabar), var(--cinnabar-2));
+  border: 1px solid rgba(240, 205, 106, 0.6);
 }
-.card-cinnabar .kicker, .card-cinnabar .convention-label, .card-cinnabar .story summary { color: #f1d27a; }
-.card-cinnabar .note, .card-cinnabar .convention, .card-cinnabar .story { color: #f0d4c8; }
-.card-cinnabar .convention { border-top-color: rgba(241, 210, 122, 0.4); }
-.card-cinnabar .inline-select select { background: #fbeee2; }
-.zodiac-big { font-size: 64px; line-height: 1; margin: 0; }
+.card-cinnabar .note, .card-cinnabar .convention, .card-cinnabar .story { color: #f3d3d6; }
+.card-cinnabar .convention { border-top-color: rgba(240, 205, 106, 0.35); }
+.zodiac-big { font-size: 64px; line-height: 1; margin: 0; filter: drop-shadow(0 0 16px rgba(255, 112, 92, 0.5)); }
 .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
-.compare > div { border: 1px solid var(--paper-line); border-radius: 12px; padding: 8px 10px; display: grid; gap: 2px; }
-.compare > div.is-on { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.35); }
+.compare > div { border: 1px solid var(--glass-line); border-radius: 12px; padding: 8px 10px; display: grid; gap: 2px; background: rgba(8, 7, 26, 0.4); }
+.compare > div.is-on { border-color: var(--gold-text); box-shadow: 0 0 0 2px rgba(240, 205, 106, 0.25); }
 .compare small { color: var(--muted); font-size: 12px; }
 .chong-list { list-style: none; padding: 0; display: grid; gap: 6px; }
 .tag { display: inline-block; font-family: var(--font-ui); font-size: 12px; padding: 1px 10px; border-radius: 999px; margin-right: 6px; color: #fff; }
-.tag-direct { background: var(--el-fire); }
+.tag-direct { background: #c0392b; }
 .tag-self { background: var(--day-sat); }
 .tag-shared { background: #b4532a; }
 
 .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 4px 0 12px; }
-.pillar { direction: ltr; text-align: center; background: rgba(0, 0, 0, 0.18); border: 1px solid rgba(241, 210, 122, 0.45); border-radius: 12px; padding: 8px 2px; }
-.pillar-title { margin: 0; font-family: var(--font-ui); font-size: 12px; color: #f1d27a; }
+.pillar { direction: ltr; text-align: center; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(240, 205, 106, 0.45); border-radius: 12px; padding: 8px 2px; }
+.pillar-title { margin: 0; font-family: var(--font-ui); font-size: 12px; color: var(--gold-text); }
 .pillar .glyph { margin: 2px 0; font-size: clamp(30px, 9vw, 42px); line-height: 1.15; font-family: 'Noto Serif CJK SC', 'Songti SC', serif; }
-.pillar-sub { margin: 0; font-size: 11px; color: #f0d4c8; }
-.pillar-alt { margin: 4px 0 0; font-size: 12px; color: #ffd38a; }
+.pillar-sub { margin: 0; font-size: 11px; color: #f3d3d6; }
+.pillar-alt { margin: 4px 0 0; font-size: 12px; color: var(--warn-text); }
 .pillar.is-empty { display: grid; place-content: center; border-style: dashed; }
-.pillar-lock { font-size: 12px; color: #f0d4c8; margin: 4px 0 0; }
-.glyph.el-wood { color: #8ee0a8; }
-.glyph.el-fire { color: #ff9e8f; }
-.glyph.el-earth { color: #f7d36b; }
-.glyph.el-metal { color: #ffffff; }
-.glyph.el-water { color: #8fbfff; }
-.card-cinnabar [class^='el-text-'] { color: #fff; }
-.el-text-wood { color: var(--el-wood); }
-.el-text-fire { color: var(--el-fire); }
-.el-text-earth { color: var(--el-earth); }
-.el-text-metal { color: var(--el-metal); }
-.el-text-water { color: var(--el-water); }
-.card-cinnabar .el-text-wood { color: #8ee0a8; }
-.card-cinnabar .el-text-fire { color: #ff9e8f; }
-.card-cinnabar .el-text-earth { color: #f7d36b; }
-.card-cinnabar .el-text-metal { color: #ffffff; }
-.card-cinnabar .el-text-water { color: #8fbfff; }
+.pillar-lock { font-size: 12px; color: #f3d3d6; margin: 4px 0 0; }
+.glyph.el-wood, .el-text-wood { color: #8ee0a8; }
+.glyph.el-fire, .el-text-fire { color: #ff9e8f; }
+.glyph.el-earth, .el-text-earth { color: #f7d36b; }
+.glyph.el-metal, .el-text-metal { color: #ffffff; }
+.glyph.el-water, .el-text-water { color: #8fbfff; }
 .element-bars { display: grid; gap: 6px; }
 .el-row { display: grid; grid-template-columns: 4.5em 1fr 1.5em; gap: 8px; align-items: center; font-size: 14px; }
-.bar { height: 10px; background: rgba(255, 255, 255, 0.18); border-radius: 999px; overflow: hidden; }
-.fill { display: block; height: 100%; border-radius: 999px; transition: width 0.4s ease; }
-.el-bg-wood { background: #8ee0a8; }
-.el-bg-fire { background: #ff9e8f; }
-.el-bg-earth { background: #f7d36b; }
-.el-bg-metal { background: #ffffff; }
-.el-bg-water { background: #8fbfff; }
+.bar { height: 10px; background: rgba(255, 255, 255, 0.14); border-radius: 999px; overflow: hidden; }
+.fill { display: block; height: 100%; border-radius: 999px; transition: width 0.4s ease; box-shadow: 0 0 8px currentColor; }
+.el-bg-wood { background: #8ee0a8; color: #8ee0a8; }
+.el-bg-fire { background: #ff9e8f; color: #ff9e8f; }
+.el-bg-earth { background: #f7d36b; color: #f7d36b; }
+.el-bg-metal { background: #ffffff; color: #ffffff; }
+.el-bg-water { background: #8fbfff; color: #8fbfff; }
 
 .dayun { list-style: none; padding: 0; margin: 8px 0; display: flex; gap: 6px; overflow-x: auto; }
-.dayun li { flex: none; display: grid; justify-items: center; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(241, 210, 122, 0.4); border-radius: 10px; padding: 6px 8px; font-size: 22px; line-height: 1.2; }
-.dayun small { font-size: 11px; color: #f0d4c8; }
+.dayun li { flex: none; display: grid; justify-items: center; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(240, 205, 106, 0.4); border-radius: 10px; padding: 6px 8px; font-size: 22px; line-height: 1.2; }
+.dayun small { font-size: 11px; color: #f3d3d6; }
 
 .kua-pair { display: grid; gap: 12px; }
 @media (min-width: 560px) { .kua-pair { grid-template-columns: 1fr 1fr; } }
 .kua-item .lead { font-size: 15px; margin: 4px 0; }
 .bagua { width: 100%; max-width: 220px; display: block; margin: 0 auto; }
-.bagua-oct { fill: var(--paper-2); stroke: var(--gold); }
-.bagua-center { font-family: var(--font-ui); font-size: 26px; fill: var(--gold-ink); text-anchor: middle; }
-.bagua-item circle { fill: var(--paper); stroke: var(--paper-line); }
-.bagua-item.is-me circle { fill: var(--cinnabar); stroke: var(--gold); }
+.bagua-oct { fill: rgba(255, 255, 255, 0.04); stroke: var(--gold-text); }
+.bagua-center { font-family: var(--font-ui); font-size: 26px; fill: var(--gold-text); text-anchor: middle; }
+.bagua-item circle { fill: rgba(8, 7, 26, 0.8); stroke: var(--glass-line); }
+.bagua-item.is-me circle { fill: #b0263b; stroke: var(--gold-text); }
 .bagua-item.is-me text { fill: #fff; }
 .bagua-sym { font-size: 18px; text-anchor: middle; fill: var(--text); }
 .bagua-zh { font-size: 10px; text-anchor: middle; fill: var(--muted); }
 
 .yiji { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.yiji h4 { margin: 0 0 4px; font-family: var(--font-ui); font-weight: 400; color: #f1d27a; }
+.yiji h4 { margin: 0 0 4px; font-family: var(--font-ui); font-weight: 400; color: var(--gold-text); }
 .yiji ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
 .yiji li span { font-size: 16px; }
-.yiji li small { display: block; font-size: 11px; color: #f0d4c8; line-height: 1.2; }
+.yiji li small { display: block; font-size: 11px; color: #f3d3d6; line-height: 1.2; }
 
-/* สากล */
-.theme-western .card { border-top: 4px solid var(--day-fri); }
+/* ไพ่ทาโรต์ */
 .tarot-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-.tarot {
-  width: 104px;
-  border: 0;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  perspective: 800px;
-  font: inherit;
-  color: inherit;
-  display: grid;
-  gap: 4px;
-}
+.tarot { width: 104px; border: 0; background: none; padding: 0; cursor: pointer; perspective: 800px; font: inherit; color: inherit; display: grid; gap: 4px; }
 .tarot-inner { position: relative; display: block; height: 170px; transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
 .tarot.is-flipped .tarot-inner { transform: rotateY(180deg); }
 .tarot-back, .tarot-front {
@@ -436,31 +478,34 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
   place-items: center;
   border: 2px solid var(--gold);
 }
-.tarot-back { background: repeating-linear-gradient(45deg, var(--ink-2) 0 6px, var(--ink-3) 6px 12px); color: var(--gold); font-size: 28px; }
-.tarot-back span { width: 56px; height: 56px; display: grid; place-items: center; border: 1px solid var(--gold); border-radius: 50%; }
-.tarot-front { transform: rotateY(180deg); background: linear-gradient(180deg, #fffaf0, #f1e6cc); align-content: start; padding: 10px 6px; gap: 2px; text-align: center; }
-.tarot-num { font-family: Georgia, serif; font-size: 20px; color: var(--gold-ink); }
-.tarot-name { font-family: Georgia, serif; font-size: 13px; line-height: 1.2; color: var(--text); }
-.tarot-th { font-family: var(--font-ui); font-size: 13px; color: var(--text); }
-.tarot-kw { font-size: 11px; line-height: 1.3; color: var(--muted); }
+.tarot-back {
+  background: radial-gradient(circle at 50% 45%, rgba(214, 64, 159, 0.45), transparent 55%), radial-gradient(circle at 50% 50%, #2a1f6e, var(--space-0));
+  color: var(--gold-text);
+  font-size: 28px;
+  box-shadow: 0 0 18px rgba(107, 63, 209, 0.5);
+}
+.tarot-back span { width: 56px; height: 56px; display: grid; place-items: center; border: 1px solid var(--gold-text); border-radius: 50%; }
+.tarot-front { transform: rotateY(180deg); background: linear-gradient(180deg, #fffaf0, #efe2c4); align-content: start; padding: 10px 6px; gap: 2px; text-align: center; color: #1f1b2d; }
+.tarot-num { font-family: Georgia, serif; font-size: 20px; color: #7a5d00; }
+.tarot-name { font-family: Georgia, serif; font-size: 13px; line-height: 1.2; }
+.tarot-th { font-family: var(--font-ui); font-size: 13px; }
+.tarot-kw { font-size: 11px; line-height: 1.3; color: #5d566e; }
 .tarot-label { font-family: var(--font-ui); font-size: 12px; color: var(--muted); text-align: center; }
 
+/* ไบโอริทึม */
 .bio { width: 100%; display: block; }
-.bio-axis { stroke: var(--paper-line); }
-.bio-today { stroke: var(--gold); stroke-dasharray: 3 3; }
+.bio-axis { stroke: var(--glass-line); }
+.bio-today { stroke: var(--gold-text); stroke-dasharray: 3 3; }
 .bio-line { fill: none; stroke-width: 2.2; }
-.bio-physical { stroke: var(--day-sun); color: var(--day-sun); }
-.bio-emotional { stroke: var(--day-fri); color: var(--day-fri); }
-.bio-intellectual { stroke: var(--day-wed); color: var(--day-wed); }
+.bio-physical { stroke: #ff6b6b; color: #ff6b6b; }
+.bio-emotional { stroke: #6fb0ff; color: #6fb0ff; }
+.bio-intellectual { stroke: #5fd394; color: #5fd394; }
 .bio-label { font-size: 10px; fill: var(--muted); text-anchor: middle; }
 .bio-legend { list-style: none; padding: 0; display: grid; gap: 4px; font-size: 14px; }
 .bio-legend span { display: inline-block; width: 14px; height: 3px; background: currentColor; margin-right: 6px; vertical-align: middle; }
 
-/* ไทย */
-.theme-thai .card:not(.card-locked) { border-top: 4px solid var(--gold); }
-
-.site-foot { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; color: var(--sky-muted); font-size: 13px; }
-.site-foot b { color: var(--sky-text); }
+.site-foot { max-width: 820px; margin: 0 auto; padding: 16px 16px 48px; color: var(--muted); font-size: 13px; }
+.site-foot b { color: var(--text); }
 .credits { opacity: 0.8; }
 
 /* motion */
@@ -468,12 +513,9 @@ main { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; }
 @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.12); opacity: 0.6; } }
 
 /* ปิดเอฟเฟกต์: ตัด motion ทิ้ง ไม่ใช่แค่ทำให้ช้าลง (CLAUDE.md §7) */
-.fx-off .card { animation: none; }
-.fx-off .aura { animation: none; }
-.fx-off .tarot-inner { transition: none; }
-.fx-off .fill { transition: none; }
+.fx-off .card, .fx-off .aura { animation: none; }
+.fx-off .tarot-inner, .fx-off .fill, .fx-off .sci-star { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .card, .aura { animation: none !important; }
-  .tarot-inner, .fill { transition: none !important; }
-  html { scroll-behavior: auto; }
+  .tarot-inner, .fill, .sci-star { transition: none !important; }
 }

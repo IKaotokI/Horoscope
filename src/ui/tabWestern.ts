@@ -36,6 +36,7 @@ export function renderWestern(r: Results): string {
      ${w.sun.alternatives.length ? `<p class="note">วันเกิดตรงกับวันที่ดวงอาทิตย์ย้ายราศี ถ้าไม่รู้เวลาอาจเป็น${w.sun.alternatives.map((a) => esc(signLine(a))).join(' / ')}</p>` : ''}
      <p class="note">ราศีสากลกับราศีไทยเป็นคนละระบบ ต่างกันราว 24° จึงมักต่างกันหนึ่งราศี</p>`,
     {
+      id: 'card-zodiac',
       kicker: 'Sun sign',
       convention: w.sun.convention,
       story: '12 ราศีเริ่มจากแผ่นดินเหนียว MUL.APIN ของบาบิโลน ต่อมาชาวกรีก-อียิปต์เพิ่มดวงชะตาส่วนบุคคล ลัคนา และ 12 ภพ และ Tetrabiblos ของปโตเลมี (ศตวรรษที่ 2) เป็นตำราอ้างอิงอยู่ราว 17 ศตวรรษ',
@@ -70,6 +71,7 @@ export function renderWestern(r: Results): string {
        <li><span>Personal Year ${r.today.date.y}</span><b>${w.personalYear} — ${esc(PERSONAL_YEAR_MEANING[w.personalYear])}</b></li>
      </ul>`,
     {
+      id: 'card-numerology',
       kicker: 'เลขศาสตร์จากวันเกิด',
       convention: lp.convention,
       conventionExtra: ' · Personal Year = r(r(เดือน) + r(วัน) + r(ปีปัจจุบัน)) เปลี่ยนวันที่ 1 ม.ค.',
@@ -86,6 +88,7 @@ export function renderWestern(r: Results): string {
      </div>
      <p class="note">แตะไพ่เพื่อพลิก</p>`,
     {
+      id: 'card-tarot',
       kicker: 'ไพ่ยิปซี Major Arcana',
       convention: w.tarot.convention,
       story: 'ไพ่ทาโรต์เริ่มจากไพ่ trionfi ของอิตาลีราวปี 1440 (ชุด Visconti-Sforza ปิดทอง) เพิ่งใช้ทำนายในปารีสช่วงทศวรรษ 1780 ส่วนชุดปี 1909 ภาพของ Pamela Colman Smith เป็นชุดแรกที่ไพ่ Minor มีภาพเล่าเรื่องครบทุกใบ',
@@ -101,6 +104,7 @@ export function renderWestern(r: Results): string {
        .join('')}</ul>
      <p class="note">ไบโอริทึมเป็น pseudoscience งานวิจัยหลายชิ้นหักล้างแล้ว ดูเพื่อความบันเทิงเท่านั้น</p>`,
     {
+      id: 'card-cycles',
       kicker: `วันที่ ${w.biorhythmDays.toLocaleString('th-TH')} นับจากวันเกิด`,
       convention: { label: `sin(2πt / ${BIORHYTHM_CYCLES.map((c) => c.days).join(' | ')}) โดย t = จำนวนวันเต็มตามปฏิทิน Asia/Bangkok` },
       story: 'Wilhelm Fliess เพื่อนของฟรอยด์เสนอรอบ 23/28 วัน ต่อมา Teltscher เพิ่มรอบ 33 วัน และกลายเป็นแฟชั่นในทศวรรษ 1970',

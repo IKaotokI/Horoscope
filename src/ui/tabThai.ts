@@ -38,6 +38,7 @@ export function renderThai(r: Results, s: AppState): string {
       </ul>
       ${wedToggle}
       ${t.day.note ? `<p class="note">${esc(t.day.note)}</p>` : ''}
+      ${r.input.time ? `<p class="note">เวลาเกิดเลือกเป็นช่วงชั่วโมง ทุกศาสตร์คำนวณที่กลางชั่วโมง (${String(r.input.time.h).padStart(2, '0')}:30 น.)</p>` : ''}
     </div>`,
     {
       kicker: 'วันเกิดและเทวดาประจำวัน',
@@ -62,6 +63,7 @@ export function renderThai(r: Results, s: AppState): string {
        .join('')}</dl>
      <p class="note">ทิศของดาวบนผัง ยืนยันแล้วเฉพาะอาทิตย์ = อีสาน และอังคาร = อาคเนย์ ${unverifiedBadge()}</p>`,
     {
+      id: 'card-taksa',
       kicker: 'วงแหวนทักษาเริ่มจากดาววันเกิด',
       convention: { label: 'วงแหวน อา→จ→อ→พ→ส→พฤ→รา→ศ ไล่ภูมิ บริวาร อายุ เดช ศรี มูละ อุตสาหะ มนตรี กาลกิณี' },
       story: 'ทักษาปรับมาจากมหาทักษา ตำราหลักคือ "มหาทักษาพยากรณ์" ของ อ.เทพย์ สาริกบุตร (2507) ส่วน "ทักษาปกรณ์" กลายเป็นตำราตั้งชื่อที่คนไทยนิยมที่สุด',
@@ -102,6 +104,7 @@ export function renderThai(r: Results, s: AppState): string {
      ${!ch.ascendant ? '<p class="note">ลัคนาและภพต้องใช้ทั้งเวลาและจังหวัดเกิด จึงยังซ่อนไว้</p>' : ''}
      <p class="note">ผังช่องสี่เหลี่ยมแบบดั้งเดิมยังรอตรวจกับตำรา จึงแสดงเป็นวงล้อก่อน ${unverifiedBadge()}</p>`,
     {
+      id: 'card-lagna',
       kicker: `ayanamsa ${ch.ayanamsa.toFixed(2)}°`,
       convention: ch.convention,
     },
@@ -140,7 +143,7 @@ export function renderThai(r: Results, s: AppState): string {
             <tr class="sum"><th>ฐาน ๔ รวม</th>${lk.sum.map((v) => `<td>${toThaiDigits(v)}</td>`).join('')}</tr>
           </tbody></table></div>
          <p class="note">ฐาน 5–9 ยังไม่มีแหล่งยืนยัน จึงยังไม่คำนวณ</p>`,
-        { kicker: 'ใช้เดือนจันทรคติ ไม่ใช่เดือนสากล', convention: lk.convention },
+        { id: 'card-lek7', kicker: 'ใช้เดือนจันทรคติ ไม่ใช่เดือนสากล', convention: lk.convention },
       )
     : '';
 
@@ -167,6 +170,7 @@ export function renderThai(r: Results, s: AppState): string {
           .map((c) => `<li>ฤกษ์ที่ ${toThaiDigits(c.n)}: ${esc(NAKSHATRA_NAMES[c.n - 1])}</li>`)
           .join('')}</ul><p class="note">กรอกเวลาเกิดเพื่อให้ได้ฤกษ์เดียว</p>`,
     {
+      id: 'card-rerk',
       kicker: 'จากตำแหน่งดวงจันทร์',
       convention: nak.convention,
       conventionExtra: ` · ชื่อฤกษ์ภาษาไทยและ 9 หมู่ฤกษ์ยังรอตรวจ ${unverifiedBadge()}`,

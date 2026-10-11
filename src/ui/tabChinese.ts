@@ -44,6 +44,7 @@ export function renderChinese(r: Results, s: AppState): string {
        : ''}
      ${z.explain ? `<p class="note">${esc(z.explain)}</p>` : ''}`,
     {
+      id: 'card-naksat',
       kicker: '12 นักษัตรและธาตุ',
       convention: z.convention,
       conventionExtra: select('chineseYear', s.conv.chineseYear, [
@@ -106,6 +107,7 @@ export function renderChinese(r: Results, s: AppState): string {
     ${bz.usedTime?.solarOffsetMin !== undefined ? `<p class="note">เวลาสุริยะจริง ${String(bz.usedTime.time.h).padStart(2, '0')}:${String(bz.usedTime.time.mi).padStart(2, '0')} (ต่างจากนาฬิกา ${bz.usedTime.solarOffsetMin} นาที)</p>` : ''}
     <p class="note">สมดุลธาตุนับจากอักษรที่เห็น (ยังไม่รวมก้านแฝง 藏干)</p>`,
     {
+      id: 'card-bazi',
       kicker: 'เรียงขวาไปซ้าย ลงสีตามธาตุ',
       className: 'card-cinnabar',
       convention: bz.convention,
@@ -135,6 +137,7 @@ export function renderChinese(r: Results, s: AppState): string {
       ? kuaBody(sex === 'male' ? c.kua.male : c.kua.female, sex === 'male' ? 'เพศชาย' : 'เพศหญิง')
       : `<p class="note">ไม่ได้ระบุเพศกำเนิด จึงแสดงทั้งสองแบบ</p><div class="kua-pair">${kuaBody(c.kua.male, 'ถ้าเป็นชาย')}${kuaBody(c.kua.female, 'ถ้าเป็นหญิง')}</div>`,
     {
+      id: 'card-kua',
       kicker: 'ฮวงจุ้ยแปดทิศ',
       convention: { label: `r = ปีลิบชุน (${c.kua.lichunYear}) mod 9; ชาย (11−r) mod 9, หญิง (r+4) mod 9; ได้ 5 → ชาย 2 / หญิง 8 · ตารางทิศดี/ร้ายทั้ง 8 ยังรอตรวจ จึงยังไม่แสดง` },
     },

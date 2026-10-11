@@ -9,8 +9,9 @@ import '@fontsource/mitr/latin-400.css';
 import './styles.css';
 import { PROVINCES } from './data/provinces';
 import { esc } from './ui/components';
-import { computeAll, toBirthInput } from './ui/compute';
-import { createStarfield } from './ui/starfield';
+import { SCIENCES, scienceLevel } from './lib/sciences';
+import { computeAll, filledFields, toBirthInput } from './ui/compute';
+import { createGalaxy, type Galaxy } from './ui/galaxy';
 import {
   type AppState, clearSaved, DEFAULT_CONVENTIONS, loadEffectsPref, loadSaved, saveEffectsPref, saveForm, type Tab,
 } from './ui/state';
@@ -37,6 +38,13 @@ const form = $<HTMLFormElement>('#birth-form');
 const results = $<HTMLElement>('#results');
 const panel = $<HTMLElement>('#tab-panel');
 const provinceSel = $<HTMLSelectElement>('#f-province');
+$<HTMLSelectElement>('#f-time').insertAdjacentHTML(
+  'beforeend',
+  Array.from({ length: 24 }, (_, h) => {
+    const hh = String(h).padStart(2, '0');
+    return `<option value="${hh}">${hh}:00 – ${hh}:59 น.</option>`;
+  }).join(''),
+);
 provinceSel.insertAdjacentHTML(
   'beforeend',
   PROVINCES.map((p) => `<option value="${esc(p.name)}">${esc(p.name)}</option>`).join(''),
@@ -44,7 +52,7 @@ provinceSel.insertAdjacentHTML(
 
 function fillForm() {
   ($('#f-date') as HTMLInputElement).value = state.form.date;
-  ($('#f-time') as HTMLInputElement).value = state.form.time;
+  ($('#f-time') as HTMLSelectElement).value = state.form.time;
   provinceSel.value = state.form.province;
   ($('#f-sex') as HTMLSelectElement).value = state.form.sex;
   ($('#f-remember') as HTMLInputElement).checked = state.remember;
@@ -53,22 +61,45 @@ function fillForm() {
 function readForm() {
   state.form = {
     date: ($('#f-date') as HTMLInputElement).value,
-    time: ($('#f-time') as HTMLInputElement).value,
+    time: ($('#f-time') as HTMLSelectElement).value,
     province: provinceSel.value,
     sex: ($('#f-sex') as HTMLSelectElement).value as AppState['form']['sex'],
   };
   state.remember = ($('#f-remember') as HTMLInputElement).checked;
 }
 
-// เอฟเฟกต์
-const stars = createStarfield($<HTMLCanvasElement>('#sky'));
+// กาแล็กซี: สร้างหลัง first paint (lazy) — ระหว่างนั้นพื้นหลัง CSS ทำหน้าที่เป็นภาพนิ่ง
+let galaxy: Galaxy | null = null;
+const fxOn = () => state.effects && !reducedMotion.matches;
+
+function updateStars() {
+  const have = filledFields(state);
+  const levels = Object.fromEntries(SCIENCES.map((s) => [s.id, scienceLevel(s, have)]));
+  galaxy?.setLevels(levels);
+  const full = Object.values(levels).filter((l) => l === 2).length;
+  $<HTMLElement>('#galaxy-count').textContent = have.has('date')
+    ? `ดาวสว่างเต็มที่ ${full}/${SCIENCES.length} ศาสตร์`
+    : 'กรอกวันเกิดเพื่อจุดประกายดาว';
+}
+
+function pickScience(id: string, tab: Tab) {
+  if (results.hidden) {
+    $<HTMLInputElement>('#f-date').focus();
+    return;
+  }
+  state.tab = tab;
+  render();
+  const target = document.getElementById(`card-${id}`) ?? results;
+  target.scrollIntoView({ behavior: fxOn() ? 'smooth' : 'auto', block: 'start' });
+}
+
 const fxBtn = $<HTMLButtonElement>('#fx-toggle');
 function applyEffects() {
   const on = state.effects && !reducedMotion.matches;
   document.documentElement.classList.toggle('fx-off', !on);
   fxBtn.setAttribute('aria-pressed', String(!state.effects));
   fxBtn.textContent = state.effects ? 'ปิดเอฟเฟกต์' : 'เปิดเอฟเฟกต์';
-  stars.setAnimated(on);
+  galaxy?.setAnimated(on);
 }
 fxBtn.addEventListener('click', () => {
   state.effects = !state.effects;
@@ -86,8 +117,7 @@ const TABS: Record<Tab, (r: ReturnType<typeof computeAll>) => string> = {
 
 function render() {
   const input = toBirthInput(state);
-  const filled = [state.form.time, state.form.province, state.form.sex].filter(Boolean).length;
-  stars.setIgnite(input ? 0.45 + filled * 0.18 : 0.3);
+  updateStars();
   const err = $<HTMLElement>('#form-error');
   if (!input) {
     results.hidden = true;
@@ -111,11 +141,17 @@ form.addEventListener('submit', (e) => {
   readForm();
   saveForm(state);
   render();
-  if (toBirthInput(state)) results.scrollIntoView({ behavior: state.effects && !reducedMotion.matches ? 'smooth' : 'auto' });
+  if (toBirthInput(state)) results.scrollIntoView({ behavior: fxOn() ? 'smooth' : 'auto' });
+});
+
+form.addEventListener('input', () => {
+  readForm();
+  updateStars();
 });
 
 form.addEventListener('change', (e) => {
   readForm();
+  updateStars();
   if ((e.target as HTMLElement).id === 'f-remember') saveForm(state);
   if (!results.hidden) {
     saveForm(state);
@@ -174,3 +210,10 @@ panel.addEventListener('click', (e) => {
 fillForm();
 applyEffects();
 render();
+requestAnimationFrame(() =>
+  setTimeout(() => {
+    galaxy = createGalaxy($<HTMLElement>('#galaxy'), SCIENCES, (s) => pickScience(s.id, s.tab));
+    applyEffects();
+    updateStars();
+  }, 0),
+);
