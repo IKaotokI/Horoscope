@@ -183,6 +183,16 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
     };
   };
 
+  /** วางตัวอักษรให้ "หมึกจริง" อยู่กึ่งกลางจุด (x, y) — textBaseline 'middle' จัดตาม em-box ทำให้ ♈ № ฯลฯ ลอยสูง */
+  const fillCentered = (text: string, x: number, y: number) => {
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    const m = ctx.measureText(text);
+    const dx = (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2;
+    const dy = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
+    ctx.fillText(text, x - dx, y + dy);
+  };
+
   /** เงาสัญลักษณ์โปร่งแสงเรืองตามสีตระกูล วาดหลังดาว */
   const drawSymbol = (sym: string, x: number, y: number, size: number, rgb: string, alpha: number) => {
     ctx.save();
@@ -200,14 +210,10 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
       ctx.roundRect(x - cw / 2, y - ch / 2, cw, ch, size / 10);
       ctx.stroke();
       ctx.font = `${size * 0.42}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('✦', x, y);
+      fillCentered('✦', x, y);
     } else {
       ctx.font = `${sym.length > 1 && !/\uFE0E/.test(sym) ? size * 0.7 : size}px 'Noto Serif CJK SC', 'Mitr', serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(sym, x, y);
+      fillCentered(sym, x, y);
     }
     ctx.restore();
   };
