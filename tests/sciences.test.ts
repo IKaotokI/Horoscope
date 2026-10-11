@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type InputField, SCIENCES, scienceLevel } from '../src/lib/sciences';
+import { type InputField, SCIENCES, scienceLabel, scienceLevel } from '../src/lib/sciences';
 
 const level = (id: string, fields: InputField[]) => scienceLevel(SCIENCES.find((s) => s.id === id)!, new Set(fields));
 
@@ -27,5 +27,11 @@ describe('ความสว่างของดาวแต่ละศาส�
   it('กรอกครบทุกช่อง = สว่างเต็มทุกดวง', () => {
     const all = new Set<InputField>(['date', 'time', 'place', 'sex']);
     expect(SCIENCES.every((s) => scienceLevel(s, all) === 2)).toBe(true);
+  });
+  it('ป้ายชื่อเป็น "ชื่อภาษาไทย(ชื่อภาษาเจ้าของ)"', () => {
+    const by = (id: string) => scienceLabel(SCIENCES.find((s) => s.id === id)!);
+    expect(by('bazi')).toBe('ปาจื้อ(八字)');
+    expect(by('tarot')).toBe('ไพ่ทาโรต์(Tarot)');
+    expect(by('taksa')).toBe('ทักษา · สีมงคล');
   });
 });

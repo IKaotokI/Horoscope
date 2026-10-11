@@ -161,32 +161,40 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  width: 0;
+  height: 0;
   padding: 0;
   margin: 0;
   border: 0;
   background: none;
-  color: var(--muted);
+  color: #fff;
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
   cursor: pointer;
   will-change: transform;
-  opacity: 0.45;
-  transition: opacity 0.6s ease, color 0.6s ease;
 }
-.sci-dot { width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; flex: none; }
-.sci-name { margin-top: -11px; padding: 0 4px; border-radius: 6px; }
-.sci-star[data-level='1'] { opacity: 0.75; color: var(--text); }
-.sci-star[data-level='2'] { opacity: 1; color: #fff; }
-.sci-star[data-level='2'].fam-thai .sci-name { text-shadow: 0 0 10px var(--fam-thai); }
-.sci-star[data-level='2'].fam-chinese .sci-name { text-shadow: 0 0 10px var(--fam-chinese); }
-.sci-star[data-level='2'].fam-western .sci-name { text-shadow: 0 0 10px var(--fam-western); }
-.sci-name .short { display: none; }
-@media (max-width: 599px) { .sci-name .long { display: none; } .sci-name .short { display: inline; } }
-.sci-star:hover .sci-name, .sci-star:focus-visible .sci-name { background: rgba(5, 4, 15, 0.7); }
+.sci-dot { position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; }
+/* ชื่อแสดงเฉพาะตอนชี้เมาส์ / focus ด้วยคีย์บอร์ด / แตะครั้งแรกบนจอสัมผัส */
+.sci-name {
+  position: absolute;
+  left: 18px;
+  top: -14px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(5, 4, 15, 0.78);
+  border: 1px solid var(--glass-line);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.sci-star.flip .sci-name { left: auto; right: 18px; }
+.sci-star:hover, .sci-star:focus-visible, .sci-star.is-active { z-index: 2; }
+.sci-star:hover .sci-name, .sci-star:focus-visible .sci-name, .sci-star.is-active .sci-name { opacity: 1; transform: none; }
+.sci-star[data-level='2'].fam-thai .sci-name { border-color: var(--fam-thai); box-shadow: 0 0 12px rgba(255, 206, 92, 0.4); }
+.sci-star[data-level='2'].fam-chinese .sci-name { border-color: var(--fam-chinese); box-shadow: 0 0 12px rgba(255, 112, 92, 0.4); }
+.sci-star[data-level='2'].fam-western .sci-name { border-color: var(--fam-western); box-shadow: 0 0 12px rgba(150, 188, 255, 0.4); }
 
 .galaxy-count { position: absolute; left: 16px; bottom: 10px; margin: 0; z-index: 2; font-family: var(--font-ui); font-size: 13px; color: var(--gold-text); }
 .galaxy-legend { position: absolute; right: 16px; bottom: 12px; z-index: 2; display: flex; gap: 10px; font-size: 12px; font-family: var(--font-ui); color: var(--muted); }
@@ -214,7 +222,6 @@ body {
   .hero { flex-direction: row; min-height: 100vh; }
   .side { order: 1; flex: 0 0 380px; padding: 32px 24px; display: flex; flex-direction: column; justify-content: center; }
   .galaxy { order: 2; flex: 1; height: auto; max-height: none; min-height: 100vh; }
-  .sci-name { font-size: 13px; }
 }
 
 /* ---------- ผลลัพธ์ ---------- */
@@ -514,8 +521,8 @@ main { max-width: 820px; margin: 0 auto; padding: 8px 16px 24px; }
 
 /* ปิดเอฟเฟกต์: ตัด motion ทิ้ง ไม่ใช่แค่ทำให้ช้าลง (CLAUDE.md §7) */
 .fx-off .card, .fx-off .aura { animation: none; }
-.fx-off .tarot-inner, .fx-off .fill, .fx-off .sci-star { transition: none; }
+.fx-off .tarot-inner, .fx-off .fill, .fx-off .sci-name { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .card, .aura { animation: none !important; }
-  .tarot-inner, .fill, .sci-star { transition: none !important; }
+  .tarot-inner, .fill, .sci-name { transition: none !important; }
 }

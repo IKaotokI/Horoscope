@@ -1,14 +1,29 @@
 // กาแล็กซีกังหันหมุนช้าๆ (canvas 2D) + ประกายดาวแทนแต่ละศาสตร์ที่สว่างตามข้อมูลที่กรอก
 // จำกัดอนุภาค ≤ 5k, DPR ≤ 1.5, หยุดวาดเมื่อมองไม่เห็น, ภาพนิ่งเมื่อ reduced motion / ปิดเอฟเฟกต์ (CLAUDE.md §7)
 import type { Science, ScienceFamily, ScienceLevel } from '../lib/sciences';
-import { FIELD_LABEL } from '../lib/sciences';
+import { FIELD_LABEL, scienceLabel } from '../lib/sciences';
 import { esc } from './components';
 
 const PARTICLES = 3600;
 const TEX = 900; // ความละเอียดภาพกาแล็กซีแบบหน้าตรงที่วาดล่วงหน้า
-const TILT_MIN = 0.52; // มุมเอียง (แกนรอง/แกนหลัก) บนจอกว้าง — จอแคบจะเอียงน้อยลงเพื่อใช้ความสูงให้คุ้ม
+const TILT = 0.7; // มุมเอียง (แกนรอง/แกนหลัก) คงที่ทุกขนาดจอ — ขนาดถูกจำกัดด้วยความสูงแทน จอยาวจึงไม่แบน
 const INCLINE = -0.32; // แกนหลักเอียงบนจอ (เรเดียน)
-const SPIN = 0.012; // เรเดียน/วินาที ≈ หมุนครบรอบใน ~9 นาที
+const SPIN = -0.012; // เรเดียน/วินาที ≈ หมุนครบรอบใน ~9 นาที, ติดลบ = หมุนทวนเข็ม แขนกังหันลากตามหลัง
+
+/** เงาสัญลักษณ์ของแต่ละศาสตร์ ที่ปรากฏพร้อมแสงเมื่อข้อมูลครบเงื่อนไข ('card' = วาดรูปไพ่) */
+const SYMBOL: Record<string, string> = {
+  taksa: '☸',
+  lek7: '๗',
+  lagna: 'ลั',
+  rerk: '☾',
+  naksat: '肖',
+  bazi: '八字',
+  kua: '☰',
+  zodiac: '♈\uFE0E',
+  numerology: '№',
+  tarot: 'card',
+  cycles: '∿',
+};
 
 export const FAMILY_COLOR: Record<ScienceFamily, [number, number, number]> = {
   thai: [255, 206, 92],
@@ -21,7 +36,7 @@ interface Placed {
   r: number; // 0..1 ของรัศมีกาแล็กซี
   a: number; // มุมบนระนาบกาแล็กซี
   level: ScienceLevel;
-  shown: number; // ความสว่างที่แสดงอยู่ (ค่อยๆ ไล่ไปหา level)
+  shown: number; // 0..1 ความสว่างที่แสดงอยู่ (ค่อยๆ ไล่ไปหา 1 เมื่อข้อมูลครบ)
   el: HTMLButtonElement;
 }
 
@@ -125,8 +140,21 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
     const el = document.createElement('button');
     el.type = 'button';
     el.className = `sci-star fam-${sci.family}`;
-    el.innerHTML = `<span class="sci-dot" aria-hidden="true"></span><span class="sci-name"><span class="long">${esc(sci.name)}</span><span class="short">${esc(sci.short)}</span></span>`;
-    el.addEventListener('click', () => onPick(sci));
+    el.innerHTML = `<span class="sci-dot" aria-hidden="true"></span><span class="sci-name">${esc(scienceLabel(sci))}</span>`;
+    // ชื่อแสดงเฉพาะตอนชี้เมาส์ (CSS :hover) — บนจอสัมผัสแตะครั้งแรกเพื่อดูชื่อ แตะซ้ำเพื่อไปที่ผล
+    let touch = false;
+    el.addEventListener('pointerdown', (e) => {
+      touch = e.pointerType !== 'mouse';
+    });
+    el.addEventListener('click', () => {
+      if (touch && !el.classList.contains('is-active')) {
+        layer.querySelectorAll('.is-active').forEach((x) => x.classList.remove('is-active'));
+        el.classList.add('is-active');
+        return;
+      }
+      el.classList.remove('is-active');
+      onPick(sci);
+    });
     layer.append(el);
     return { sci, ...pos, level: 0, shown: 0, el };
   });
@@ -140,10 +168,9 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
   let last = performance.now();
 
   const geometry = () => {
-    const narrow = w < 600;
-    const tilt = Math.min(0.85, Math.max(TILT_MIN, (h * 0.8) / (w * 0.9)));
-    const R = Math.min(w * (narrow ? 0.38 : 0.46), (h * 0.46) / tilt, 600);
-    return { cx: w * (narrow ? 0.45 : 0.5), cy: h * 0.5, R, tilt, scale: Math.max(0.5, Math.min(1, R / 380)) };
+    // วงรีหลังเอียงต้องพอดีทั้งกว้างและสูง (คิดรวม INCLINE แบบประมาณ) — ไม่ยืดตามสัดส่วนจอ
+    const R = Math.min(w * 0.44, (h * 0.42) / (TILT + 0.14), 620);
+    return { cx: w * 0.5, cy: h * 0.5, R, tilt: TILT, scale: Math.max(0.5, Math.min(1, R / 380)) };
   };
 
   const toScreen = (r: number, a: number, rot: number) => {
@@ -154,6 +181,35 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
       x: cx + x0 * Math.cos(INCLINE) - y0 * Math.sin(INCLINE),
       y: cy + x0 * Math.sin(INCLINE) + y0 * Math.cos(INCLINE),
     };
+  };
+
+  /** เงาสัญลักษณ์โปร่งแสงเรืองตามสีตระกูล วาดหลังดาว */
+  const drawSymbol = (sym: string, x: number, y: number, size: number, rgb: string, alpha: number) => {
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = `rgb(${rgb})`;
+    ctx.strokeStyle = `rgb(${rgb})`;
+    ctx.shadowColor = `rgb(${rgb})`;
+    ctx.shadowBlur = size * 0.45;
+    if (sym === 'card') {
+      const cw = size * 0.62;
+      const ch = size;
+      ctx.lineWidth = Math.max(1.5, size / 18);
+      ctx.beginPath();
+      ctx.roundRect(x - cw / 2, y - ch / 2, cw, ch, size / 10);
+      ctx.stroke();
+      ctx.font = `${size * 0.42}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✦', x, y);
+    } else {
+      ctx.font = `${sym.length > 1 && !/\uFE0E/.test(sym) ? size * 0.7 : size}px 'Noto Serif CJK SC', 'Mitr', serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(sym, x, y);
+    }
+    ctx.restore();
   };
 
   const draw = (t: number) => {
@@ -178,25 +234,33 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
     ctx.drawImage(tex, -R, -R, R * 2, R * 2);
     ctx.restore();
 
-    // ประกายดาวของแต่ละศาสตร์
-    ctx.globalCompositeOperation = 'lighter';
+    // ประกายดาวของแต่ละศาสตร์: ก่อนครบเงื่อนไขเป็นจุดหรี่ เมื่อครบจึงเปล่งแสง + เงาสัญลักษณ์
     for (const p of placed) {
-      p.shown += (p.level - p.shown) * (animated ? 0.06 : 1);
+      const target = p.level === 2 ? 1 : 0;
+      p.shown += (target - p.shown) * (animated ? 0.05 : 1);
+      const k = p.shown;
       const { x, y } = toScreen(p.r, p.a, angle);
       const [cr, cg, cb] = FAMILY_COLOR[p.sci.family];
-      const pulse = animated && p.level === 2 ? 1 + 0.12 * Math.sin(t / 420 + p.r * 9) : 1;
-      const k = p.shown / 2; // 0..1
-      const glow = (7 + 26 * k) * pulse * scale;
-      const grad = ctx.createRadialGradient(x, y, 0, x, y, glow);
-      grad.addColorStop(0, `rgba(255,255,255,${0.35 + 0.65 * k})`);
-      grad.addColorStop(0.25, `rgba(${cr},${cg},${cb},${0.25 + 0.55 * k})`);
-      grad.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
-      ctx.fillStyle = grad;
-      ctx.fillRect(x - glow, y - glow, glow * 2, glow * 2);
-      if (k > 0.05) {
-        // แฉกแสงสี่ทิศเมื่อเริ่มสว่าง
-        const len = glow * (1.1 + 0.9 * k);
-        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${0.55 * k})`;
+      const pulse = animated && k > 0.5 ? 1 + 0.1 * Math.sin(t / 480 + p.r * 9) : 1;
+
+      if (k > 0.01) drawSymbol(SYMBOL[p.sci.id], x, y, 72 * scale * pulse, `${cr},${cg},${cb}`, 0.4 * k);
+
+      ctx.globalCompositeOperation = 'lighter';
+      const dim = `rgba(${cr},${cg},${cb},0.5)`;
+      ctx.fillStyle = dim;
+      ctx.beginPath();
+      ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      if (k > 0.01) {
+        const glow = (8 + 26 * k) * pulse * scale;
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, glow);
+        grad.addColorStop(0, `rgba(255,255,255,${k})`);
+        grad.addColorStop(0.25, `rgba(${cr},${cg},${cb},${0.8 * k})`);
+        grad.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(x - glow, y - glow, glow * 2, glow * 2);
+        const len = glow * 2;
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${0.6 * k})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(x - len, y);
@@ -206,6 +270,7 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
         ctx.stroke();
       }
       p.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+      p.el.classList.toggle('flip', x > w * 0.6);
     }
     ctx.globalCompositeOperation = 'source-over';
   };
@@ -251,10 +316,9 @@ export function createGalaxy(host: HTMLElement, sciences: Science[], onPick: (s:
       for (const p of placed) {
         p.level = levels[p.sci.id] ?? 0;
         const need = p.sci.full.map((f) => FIELD_LABEL[f]).join(' + ');
-        const state = ['ยังไม่พร้อม', 'ได้ผลบางส่วน', 'ข้อมูลครบ'][p.level];
+        const state = p.level === 2 ? 'ข้อมูลครบ' : 'ยังไม่ครบเงื่อนไข';
         p.el.dataset.level = String(p.level);
-        p.el.setAttribute('aria-label', `${p.sci.name}: ${state} (ต้องการ ${need})`);
-        p.el.title = `${p.sci.name} — ${state}\nต้องการ: ${need}`;
+        p.el.setAttribute('aria-label', `${scienceLabel(p.sci)}: ${state} (ต้องการ ${need})`);
       }
       if (!animated || !visible) draw(performance.now());
     },
