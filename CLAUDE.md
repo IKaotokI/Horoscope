@@ -4,6 +4,12 @@
 โน้ตวิจัยดิบอยู่ที่ `research_notes/ศาสตร์ดูดวงไทยสำหรับเว็บ/` (thai_traditional_systems, chinese_systems, western_universal_systems, market_stats_privacy, visual_heritage_gui)
 ข้อมูลที่ติด **[ยังไม่ยืนยัน]** ห้ามนำไปใช้จริงจนกว่าจะตรวจกับแหล่งต้นฉบับหรือ unit test แล้ว
 
+## คู่มือแต่ละศาสตร์ (`docs/systems/`)
+แต่ละไฟล์มี: ข้อมูลนำเข้า, ธรรมเนียมและค่าตั้งต้น, อัลกอริทึม, ค่าตรวจ unit test, รายการที่ยังไม่ยืนยัน, แนวทาง GUI, ประวัติย่อ, แหล่งอ้างอิง
+- **ไทย**: [ราศีไทย/ลัคนา/ภพ](docs/systems/thai-rasi-lagna.md) · [วันเกิด/เทวดา/สีประจำวัน](docs/systems/thai-birth-day.md) · [ทักษา 8 ภูมิ/สีมงคล](docs/systems/thai-taksa.md) · [เลข 7 ตัว](docs/systems/thai-lek-7-tua.md) · [มหาทักษา/ดาวเสวยอายุ](docs/systems/thai-mahataksa.md) · [ปฏิทินไทย/นักษัตรไทย](docs/systems/thai-calendar-naksat.md) · [ฤกษ์ 27](docs/systems/thai-rerk-27.md)
+- **จีน**: [12 นักษัตร/ปีชง](docs/systems/chinese-zodiac-pichong.md) · [ปาจื้อ/大運](docs/systems/chinese-bazi.md) · [Kua/八宅](docs/systems/chinese-kua.md) · [ปฏิทินจีนวันนี้/紫微](docs/systems/chinese-almanac-ziwei.md)
+- **สากล**: [ราศีสากล/Moon/ASC](docs/systems/western-zodiac.md) · [เลขศาสตร์](docs/systems/numerology.md) · [ไพ่ทาโรต์](docs/systems/tarot.md) · [ไบโอริทึม](docs/systems/biorhythm.md) · [Tzolk'in](docs/systems/tzolkin.md)
+
 ## 1. เป้าหมายโปรเจกต์
 - เว็บดูดวงที่คำนวณอัตโนมัติหลายศาสตร์พร้อมกัน ภาพตระการตาโดยอิงภาพและสัญลักษณ์ทางประวัติศาสตร์
 - กลุ่มเป้าหมายหลัก: Gen Z/Gen Y ผู้หญิง ที่มาจากโซเชียล ใช้มือถือเป็นหลัก (mobile-first)
