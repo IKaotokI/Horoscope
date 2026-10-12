@@ -13,7 +13,7 @@ import { SCIENCES, scienceLevel } from './lib/sciences';
 import { computeAll, filledFields, toBirthInput } from './ui/compute';
 import { createGalaxy, type Galaxy } from './ui/galaxy';
 import {
-  type AppState, clearSaved, DEFAULT_CONVENTIONS, loadEffectsPref, loadSaved, saveEffectsPref, saveForm, type Tab,
+  type AppState, DEFAULT_CONVENTIONS, loadEffectsPref, purgeSavedBirth, saveEffectsPref, type Tab,
 } from './ui/state';
 import { renderChinese } from './ui/tabChinese';
 import { renderThai } from './ui/tabThai';
@@ -23,15 +23,15 @@ import { renderWestern } from './ui/tabWestern';
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-const saved = loadSaved();
+// เลิกใช้ฟีเจอร์ "จำค่าที่กรอก" แล้ว ลบข้อมูลเกิดที่อาจค้างจากรุ่นก่อน
+purgeSavedBirth();
 
 const state: AppState = {
-  form: saved?.form ?? { date: '', time: '', province: '', sex: '' },
-  conv: saved?.conv ?? { ...DEFAULT_CONVENTIONS },
+  form: { date: '', time: '', province: '', sex: '' },
+  conv: { ...DEFAULT_CONVENTIONS },
   tab: 'thai',
   wedChoice: 4,
   effects: loadEffectsPref() ?? !reducedMotion.matches,
-  remember: !!saved,
 };
 
 const form = $<HTMLFormElement>('#birth-form');
@@ -55,7 +55,6 @@ function fillForm() {
   ($('#f-time') as HTMLSelectElement).value = state.form.time;
   provinceSel.value = state.form.province;
   ($('#f-sex') as HTMLSelectElement).value = state.form.sex;
-  ($('#f-remember') as HTMLInputElement).checked = state.remember;
 }
 
 function readForm() {
@@ -65,7 +64,6 @@ function readForm() {
     province: provinceSel.value,
     sex: ($('#f-sex') as HTMLSelectElement).value as AppState['form']['sex'],
   };
-  state.remember = ($('#f-remember') as HTMLInputElement).checked;
 }
 
 // กาแล็กซี: สร้างหลัง first paint (lazy) — ระหว่างนั้นพื้นหลัง CSS ทำหน้าที่เป็นภาพนิ่ง
@@ -80,6 +78,7 @@ function updateStars() {
   $<HTMLElement>('#galaxy-count').textContent = have.has('date')
     ? `ดาวสว่างเต็มที่ ${full}/${SCIENCES.length} ศาสตร์`
     : 'กรอกวันเกิดเพื่อจุดประกายดาว';
+  $<HTMLButtonElement>('#go-btn').hidden = !have.has('date');
 }
 
 function pickScience(id: string, tab: Tab) {
@@ -139,7 +138,6 @@ function render() {
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   readForm();
-  saveForm(state);
   render();
   if (toBirthInput(state)) results.scrollIntoView({ behavior: fxOn() ? 'smooth' : 'auto' });
 });
@@ -149,24 +147,10 @@ form.addEventListener('input', () => {
   updateStars();
 });
 
-form.addEventListener('change', (e) => {
+form.addEventListener('change', () => {
   readForm();
   updateStars();
-  if ((e.target as HTMLElement).id === 'f-remember') saveForm(state);
-  if (!results.hidden) {
-    saveForm(state);
-    render();
-  }
-});
-
-$('#clear-saved').addEventListener('click', () => {
-  clearSaved();
-  state.remember = false;
-  state.form = { date: '', time: '', province: '', sex: '' };
-  state.conv = { ...DEFAULT_CONVENTIONS };
-  fillForm();
-  render();
-  $<HTMLElement>('#form-error').textContent = 'ลบข้อมูลที่จำไว้ในเครื่องนี้แล้ว';
+  if (!results.hidden) render();
 });
 
 document.querySelector('.tabs')!.addEventListener('click', (e) => {
@@ -192,7 +176,6 @@ panel.addEventListener('change', (e) => {
   if (!key) return;
   if (key === 'trueSolarTime') state.conv.trueSolarTime = el.value === 'on';
   else (state.conv as unknown as Record<string, string>)[key] = el.value;
-  saveForm(state);
   render();
 });
 panel.addEventListener('click', (e) => {

@@ -27,7 +27,6 @@ export interface AppState {
   /** เลือกพุธกลางวัน (4) / กลางคืน (8) เมื่อไม่มีเวลาเกิด */
   wedChoice: 4 | 8;
   effects: boolean;
-  remember: boolean;
 }
 
 export const DEFAULT_CONVENTIONS: Conventions = {
@@ -41,40 +40,12 @@ export const DEFAULT_CONVENTIONS: Conventions = {
 const KEY = 'horoscope.saved.v1';
 const PREF_KEY = 'horoscope.prefs.v1';
 
-interface Saved {
-  form: FormState;
-  conv: Conventions;
-}
-
-export function loadSaved(): Saved | null {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    const v = JSON.parse(raw) as Saved;
-    if (typeof v?.form?.date !== 'string') return null;
-    // ค่ารุ่นเก่าเก็บเป็น HH:MM → ตัดเหลือชั่วโมง
-    const time = /^\d{2}/.test(v.form.time ?? '') ? v.form.time.slice(0, 2) : '';
-    return { form: { ...v.form, time }, conv: { ...DEFAULT_CONVENTIONS, ...v.conv } };
-  } catch {
-    return null;
-  }
-}
-
-export function saveForm(s: AppState): void {
-  try {
-    if (s.remember) localStorage.setItem(KEY, JSON.stringify({ form: s.form, conv: s.conv } satisfies Saved));
-    else localStorage.removeItem(KEY);
-  } catch {
-    /* โหมดส่วนตัวหรือถูกบล็อก — ไม่ต้องทำอะไร */
-  }
-}
-
-export function clearSaved(): void {
+/** ลบข้อมูลเกิดที่รุ่นก่อนเคยจำไว้ (ฟีเจอร์ "จำค่าที่กรอก" ถูกเอาออกแล้ว) */
+export function purgeSavedBirth(): void {
   try {
     localStorage.removeItem(KEY);
-    localStorage.removeItem(PREF_KEY);
   } catch {
-    /* ignore */
+    /* โหมดส่วนตัวหรือถูกบล็อก — ไม่ต้องทำอะไร */
   }
 }
 

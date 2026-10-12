@@ -18,23 +18,20 @@
         <header class="site-head">
           <p class="brand-kicker">ไทย · จีน · สากล</p>
           <h1>ดวงสามศาสตร์</h1>
-          <p class="brand-sub">กรอกแค่วันเกิดก็ดูได้ กรอกเพิ่มแล้วดาวของแต่ละศาสตร์จะสว่างขึ้น</p>
         </header>
 
         <form id="birth-form" class="birth-form" novalidate>
           <div class="field">
-            <label for="f-date">วันเกิด <span class="req">จำเป็น</span></label>
+            <label for="f-date">วันเกิด</label>
             <input id="f-date" name="date" type="date" min="1900-01-01" max="2100-12-31" required />
           </div>
           <div class="field">
             <label for="f-time">เวลาเกิด <span class="opt">ไม่บังคับ</span></label>
             <select id="f-time" name="time"><option value="">ไม่ทราบ</option></select>
-            <small>เลือกเป็นช่วงชั่วโมง ปลดล็อกปาจื้อ 4 เสาและฤกษ์ 27</small>
           </div>
           <div class="field">
             <label for="f-province">จังหวัดเกิด <span class="opt">ไม่บังคับ</span></label>
             <select id="f-province" name="province"><option value="">ไม่ระบุ</option></select>
-            <small>ใช้แค่พิกัด คู่กับเวลาเกิดเพื่อหาลัคนา</small>
           </div>
           <div class="field">
             <label for="f-sex">เพศกำเนิด <span class="opt">ไม่บังคับ</span></label>
@@ -43,23 +40,14 @@
               <option value="female">หญิง</option>
               <option value="male">ชาย</option>
             </select>
-            <small>ใช้กับ Kua และ 大運 เท่านั้น</small>
-          </div>
-          <button type="submit" class="primary-btn">ดูดวง</button>
-          <div class="form-extra">
-            <label class="check"><input type="checkbox" id="f-remember" /> จำค่าที่กรอกไว้ในเครื่องนี้</label>
-            <button type="button" id="clear-saved" class="link-btn">ลบข้อมูลที่จำไว้</button>
           </div>
           <p id="form-error" class="form-error" role="status" aria-live="polite"></p>
-          <p class="privacy">🔒 คำนวณในเบราว์เซอร์ของคุณทั้งหมด ไม่ส่งวันเกิดไปที่ไหน ไม่ต้องสมัครสมาชิก ไม่ขอชื่อหรือเบอร์โทร</p>
         </form>
       </aside>
 
       <section class="galaxy" id="galaxy" aria-label="กาแล็กซีของศาสตร์ต่างๆ ดาวจะสว่างขึ้นเมื่อกรอกข้อมูลครบตามเงื่อนไข">
         <p class="galaxy-count" id="galaxy-count" aria-live="polite"></p>
-        <div class="galaxy-legend" aria-hidden="true">
-          <span class="lg lg-thai">ไทย</span><span class="lg lg-chinese">จีน</span><span class="lg lg-western">สากล</span>
-        </div>
+        <button type="submit" form="birth-form" id="go-btn" class="primary-btn galaxy-go" hidden>ดูดวง</button>
         <button type="button" id="fx-toggle" class="ghost-btn" aria-pressed="false">ปิดเอฟเฟกต์</button>
       </section>
     </div>
